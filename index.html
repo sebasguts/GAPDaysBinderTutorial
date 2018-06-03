@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Introduction to Binder</title>
+
+        <meta name="description" content="Introduction to Binder">
+        <meta name="author" content="Sebastian Gutsche">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/moon.css" id="theme">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <div class="reveal">
+
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+                <section data-markdown>
+                    <script type="text/template">
+                        ## **Binder Tutorial**
+                        <img src="images/logo.png" alt=" Binder Logo" style="width:auto;height:228px;" >
+                        
+                        Sebastian Gutsche
+                        
+                        <small>[link](link)</small>
+                        
+                        <small>[gutsche@mathematik.uni-siegen.de](mailto:gutsche@mathematik.uni-siegen.de)</small>
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        Disclaimer:
+
+                        This is an opinionated talk, the guidelines presented do not follow the best practice guidelines on [mybinder.org](https://mybinder.org)
+                        
+                        This presentation is created using [reveal.js](https://revealjs.com)
+                    </script>
+                </section>
+                
+                
+                <section>
+                    <h3>Outline</h3>
+                    <ul>
+                        <li><p class="fragment"><a href="#/What-is-Binder">What is Binder?</a></p></li>
+                        <li><p class="fragment"><a href="#/image-prepation">Prepare a docker image for Binder</a></p></li>
+                        <li><p class="fragment"><a href="#/using-images">Using this Docker image to share interactive Notebooks</a></p></li>
+                    </ul>
+                </section>
+
+                <section id="What-is-Binder">
+                    <h2>What is Binder</h2>
+                    </br>
+                    <span class="fragment">Binder turns GitHub repositories into interactive environments using Jupyter</span>
+                    </p>
+                    </br>
+                    <span class="fragment">
+                      Example: <a href="https://github.com/Normaliz/NormalizJupyter">https://github.com/Normaliz/NormalizJupyter</a>
+                    </span>
+                </section>
+                
+                <section>
+                  <h3>General workflow</h3>
+                  <ul>
+                    <li><p class="fragment">Create a Dockerimage containing the software you want to use, which needs to have some requirements (later)</p></li>
+                    <li><p class="fragment">Give the image a unique tag and upload it to DockerHub</p></li>
+                    <li><p class="fragment">Create a GitHub repository containing your Jupyter notebooks and a small Dockerfile pointing to the main image</p></li>
+                  </ul>
+                </section>
+
+
+                <section id="image-preparation">
+                  <h3>How to prepare images for Binder</h3>
+                    </br>
+                    <ul>
+                        <li class="fragment">First, install your software, for example python</li>
+                    </ul>
+<pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
+FROM ubuntu:bionic
+RUN apt-get update && apt-get install -y python
+</code></pre>
+<br/>
+                Now prepare the image for use with Binder!</span>
+                </section>
+
+                <section>
+                  <h3>Requirements for Binder images</h3>
+                  <br/>
+                  The image must contain the Jupyter notebook, which can be installed via
+<pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
+RUN apt-get install -y python-pip
+RUN pip install notebook
+</code></pre>
+<span class="fragment">If you want to have JupyterHub available, install it via</span>
+<pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
+RUN pip install jupyterlab_launcher jupyterlab traitlets ipython
+RUN jupyter serverextension enable --py jupyterlab --user
+</code></pre>
+                </section>
+
+                <section>
+                  <h3>Requirements for Binder image</h3>
+                  The user which is used to start the image must have UID 1000. This can be achieved using the following snippet:
+                  <pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
+ENV NB_USER gap
+ENV NB_UID 1000
+ENV HOME /home/${NB_USER}
+
+RUN adduser --disabled-password --gecos "Default user" \
+            --uid ${NB_UID} ${NB_USER}
+</code></pre>
+                  <span class="fragment">
+                    It is not necessary to use the variables, but they will reappear later.
+                  </span>
+                </section>
+                
+                <section>
+                  <h3>Requirements for Binder image</h3>
+                  The image must specify a default command:
+                  <pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
+CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h3>Build and upload the image</h3>
+                    Build the image and upload it to DockerHub
+                    <pre class="fragment"><code class="bash" data-trim data-noescape contenteditable>
+$ docker build --tag="sebasguts/mybinderbase:20180604"
+$ docker push sebasguts/mybinderbase:20180604
+                      </code></pre>
+                    <span class"fragment">You can use any tag except latest.</span>
+
+                  </section>
+
+                  <section id="using-images">
+                    <h3>How to create shareable repositories</h3>
+                    Using the base image you can share notebooks via GitHub. To do so, create a git repo with your notebooks in it and add
+                    a Dockerfile like this one:
+                    <pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
+FROM sebasguts/mybinderbase:20180604
+COPY . ${HOME}
+USER root
+RUN chown -R ${NB_UID} ${HOME}
+USER ${NB_USER}<code></pre>
+                  </section>
+                  <section>
+                    
+                  </section>
+
+            </div>
+
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.js"></script>
+
+        <script>
+
+            // More info https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                transition: 'convex', // none/fade/slide/convex/concave/zoom
+                
+                width: 1024,
+                height: 768,
+
+                // More info https://github.com/hakimel/reveal.js#dependencies
+                dependencies: [
+                    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'plugin/zoom-js/zoom.js', async: true },
+                    { src: 'plugin/notes/notes.js', async: true }
+                ]
+            });
+
+        </script>
+
+    </body>
+</html>
