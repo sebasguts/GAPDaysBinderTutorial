@@ -97,15 +97,13 @@
                 <section id="image-preparation">
                   <h3>How to prepare images for Binder</h3>
                     </br>
-                    <ul>
-                        <li class="fragment">First, install your software, for example python</li>
-                    </ul>
+                        <span class="fragment">First, install your software, for example python</span>
 <pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
 FROM ubuntu:bionic
 RUN apt-get update && apt-get install -y python
 </code></pre>
 <br/>
-                Now prepare the image for use with Binder!</span>
+                <span class="fragment">Now prepare the image for use with Binder!</span>
                 </section>
 
                 <section>
@@ -143,8 +141,7 @@ RUN adduser --disabled-password --gecos "Default user" \
                   <h3>Requirements for Binder image</h3>
                   The image must specify a default command:
                   <pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
-CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]
-                    </code></pre>
+CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]</code></pre>
                 </section>
 
                 <section>
@@ -152,8 +149,7 @@ CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]
                     Build the image and upload it to DockerHub
                     <pre class="fragment"><code class="bash" data-trim data-noescape contenteditable>
 $ docker build --tag="sebasguts/mybinderbase:20180604"
-$ docker push sebasguts/mybinderbase:20180604
-                      </code></pre>
+$ docker push sebasguts/mybinderbase:20180604</code></pre>
                     <span class"fragment">You can use any tag except latest.</span>
 
                   </section>
@@ -167,10 +163,26 @@ FROM sebasguts/mybinderbase:20180604
 COPY . ${HOME}
 USER root
 RUN chown -R ${NB_UID} ${HOME}
-USER ${NB_USER}<code></pre>
+USER ${NB_USER}</code></pre>
+    <span class="fragment">Afterwards, upload it to GitHub and run it with Binder!</span>
                   </section>
+
                   <section>
-                    
+                    <h3>Further notes</h3>
+                    <ul>
+                        <li class="fragment">To execute JupyterLab instead of notebook, type "lab" in the notebook filename field</li>
+                        <li class="fragment">If you change your baseimage, you need to give it a new tag, as Binder will not rebuild the image otherwise</li>
+                    </ul>
+                  </section>
+
+                  <section>
+                      <h3>The MyBinder badge</h3>
+                      To include the "Run on MyBinder" badge add the following code to the repositories README
+                      <pre class="fragment"><code class="markdown" data-trim data-noescape contenteditable>
+[![Binder](https://mybinder.org/badge.svg)]
+(https://mybinder.org/v2/gh/github-username/repository-name/master)
+</code></pre>
+<img class="fragment" src="images/badge.svg" alt="Binder Badge"> 
                   </section>
 
             </div>
