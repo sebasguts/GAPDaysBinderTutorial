@@ -47,7 +47,7 @@
                         
                         Sebastian Gutsche
                         
-                        <small>[sebasguts.github.io](https://sebasguts.github.io/GAPDaysBinderTutorial)</small>
+                        <small>[sebasguts.github.io/GAPDaysBinderTutorial](https://sebasguts.github.io/GAPDaysBinderTutorial)</small>
                         
                         <small>[gutsche@mathematik.uni-siegen.de](mailto:gutsche@mathematik.uni-siegen.de)</small>
                     </script>
@@ -133,16 +133,16 @@ RUN adduser --disabled-password --gecos "Default user" \
             --uid ${NB_UID} ${NB_USER}
 </code></pre>
                   <span class="fragment">
-                    It is not necessary to use the variables, but they will reappear later.
+                    It is not necessary to use variables, but they will reappear later.
                   </span>
                 </section>
                 
-                <section>
+                <!-- <section>
                   <h3>Requirements for Binder image</h3>
                   The image must specify a default command:
                   <pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
 CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]</code></pre>
-                </section>
+                </section> -->
 
                 <section>
                     <h3>Build and upload the image</h3>
