@@ -68,8 +68,8 @@
                     <h3>Outline</h3>
                     <ul>
                         <li class="fragment"><p><a href="#/What-is-Binder">What is Binder?</a></p></li>
-                        <li class="fragment"><p><a href="#/image-prepation">Prepare a docker image for Binder</a></p></li>
-                        <li class="fragment"><p><a href="#/using-images">Using this Docker image to share interactive Notebooks</a></p></li>
+                        <li class="fragment"><p><a href="#/image-prepation">Prepare a Docker image for Binder</a></p></li>
+                        <li class="fragment"><p><a href="#/using-images">Using this Docker image to share interactive notebooks</a></p></li>
                     </ul>
                 </section>
 
@@ -87,7 +87,7 @@
                 <section>
                   <h3>General workflow</h3>
                   <ul>
-                    <li class="fragment"><p>Create a Dockerimage containing the software you want to use, which needs to have some requirements (later)</p></li>
+                    <li class="fragment"><p>Create a Docker image containing the software you want to use, which needs to have some requirements (later)</p></li>
                     <li class="fragment"><p>Give the image a unique tag and upload it to DockerHub</p></li>
                     <li class="fragment"><p>Create a GitHub repository containing your Jupyter notebooks and a small Dockerfile pointing to the main image</p></li>
                   </ul>
@@ -114,7 +114,7 @@ RUN apt-get update && apt-get install -y python
 RUN apt-get install -y python-pip
 RUN pip install notebook
 </code></pre>
-<span class="fragment">If you want to have JupyterHub available, install it via</span>
+<span class="fragment">If you want to have JupyterLab available, install it via</span>
 <pre class="fragment"><code class="Dockerfile" data-trim data-noescape contenteditable>
 RUN pip install jupyterlab_launcher jupyterlab traitlets ipython
 RUN jupyter serverextension enable --py jupyterlab --user
@@ -148,7 +148,7 @@ CMD ["jupyter", "notebook", "--ip", "0.0.0.0"]</code></pre>
                     <h3>Build and upload the image</h3>
                     Build the image and upload it to DockerHub
                     <pre class="fragment"><code class="bash" data-trim data-noescape contenteditable>
-$ docker build --tag="sebasguts/mybinderbase:20180604"
+$ docker build --tag="sebasguts/mybinderbase:20180604" .
 $ docker push sebasguts/mybinderbase:20180604</code></pre>
                     <span class"fragment">You can use any tag except latest.</span>
 
